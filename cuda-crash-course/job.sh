@@ -7,4 +7,5 @@
 # Execute the program
 
 #./1-vector-addition-par               
-./1-vector-addition-um               
+#./1-vector-addition-um    
+./2-matrix-mult             

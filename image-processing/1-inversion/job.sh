@@ -4,4 +4,6 @@
 #SBATCH --gres=gpu:1                  # Request 1 GPU resource
 #SBATCH --constraint=TitanX           # Specify a hardware constraint (e.g., TitanX GPU)
 
+rm ./output.png
+
 ./a.out

@@ -7,6 +7,7 @@
 #include <iostream>
 #include <fstream>
 #include <assert.h>
+#include <chrono>
 
 size_t getImageSize(int width, int height, int channels)
 {
@@ -48,26 +49,20 @@ int main()
 
     std::cout << "Image loaded: " << width << "x" << height << "x" << 1 << std::endl;
 
-    // Print a few pixels
-    for (int i = 0; i < 10; i++)
-    {
-        std::cout << "Pixel " << i << ": " << (int)img[i] << std::endl;
-    }
-
     unsigned char *inverted_img = new unsigned char[width * height];
+
+    auto start = std::chrono::high_resolution_clock::now();
+
     invert(img, inverted_img, width, height);
 
-    std::cout << std::endl;
-
-    // Print a few pixels for inverted image
-    for (int i = 0; i < 10; i++)
-    {
-        std::cout << "Pixel " << i << ": " << (int)inverted_img[i] << std::endl;
-    }
+    auto stop = std::chrono::high_resolution_clock::now();
 
     validate(img, inverted_img, width, height);
 
     save("output.png", inverted_img, width, height);
+
+    std::chrono::duration<double, std::milli> ms = stop - start;
+    std::cout << "Inversion execution time: " << ms.count() << " ms\n";
 
     delete[] inverted_img;
     stbi_image_free(img);

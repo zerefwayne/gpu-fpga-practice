@@ -8,4 +8,4 @@
 
 #./1-vector-addition-par               
 #./1-vector-addition-um    
-./2-matrix-mult             
+#./2-matrix-mult

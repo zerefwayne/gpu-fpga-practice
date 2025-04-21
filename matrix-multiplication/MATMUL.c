@@ -6,6 +6,8 @@
 
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
+void do_compute(const struct parameters *p);
+
 void initMatrix(float **X, int *r_X, int *c_X)
 {
     long size_X = *r_X * *c_X;
@@ -155,12 +157,17 @@ int main(int argc, char **argv)
         .c_N = c_N,
         .r_P = r_P,
         .c_P = c_P,
-        .head = -1,
+        .head = 5,
         .output_filename = "output/MATMUL.out"};
 
     // Sanity check: Print matrix dimensions and data
     // Note: This is a simple check to ensure the matrices are read correctly.
     sanityCheck(&p);
+
+    printf("Starting computation!\n");
+
+    // Entry point of computation
+    do_compute(&p);
 
     // Print result to output file
     printf("Successfully completed!\n");

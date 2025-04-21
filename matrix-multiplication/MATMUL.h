@@ -1,3 +1,5 @@
+#pragma once
+
 struct parameters {
     float *M;
     float *N;

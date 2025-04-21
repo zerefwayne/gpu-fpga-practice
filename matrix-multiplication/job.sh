@@ -4,4 +4,4 @@
 #SBATCH --gres=gpu:1                  # Request 1 GPU resource
 #SBATCH --constraint=TitanX           # Specify a hardware constraint (e.g., TitanX GPU)
 
-./bin/MATMUL ./test_matrix.in                          # Execute the program
+./bin/MATMUL_seq ./input/input_1.in                          # Execute the program

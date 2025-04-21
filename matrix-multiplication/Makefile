@@ -12,7 +12,7 @@ BIN_DIR=bin
 OUTPUT_DIR=output
 
 # Define objects
-OBJS=$(BIN_DIR)/MATMUL
+OBJS=$(BIN_DIR)/MATMUL_seq
 
 all: $(BIN_DIR) $(OUTPUT_DIR) $(OBJS)
 
@@ -28,12 +28,14 @@ $(OUTPUT_DIR):
 $(BIN_DIR)/MATMUL.o: MATMUL.c | $(BIN_DIR)
 	$(CC) $(CFLAGS) $(DEBUG) -c $< -o $@
 
-$(BIN_DIR)/MATMUL: $(BIN_DIR)/MATMUL.o
-	$(CC) $(DEBUG) $< $(LIBS) -o $@
+$(BIN_DIR)/MATMUL_seq.o: MATMUL_seq.c | $(BIN_DIR)
+	$(CC) $(CFLAGS) $(DEBUG) -c $< -o $@
+
+$(BIN_DIR)/MATMUL_seq: $(BIN_DIR)/MATMUL.o $(BIN_DIR)/MATMUL_seq.o | $(BIN_DIR)
+	$(CC) $(DEBUG) $^ $(LIBS) -o $@
 
 clean:
-	rm -rf $(BIN_DIR)/* slurm*.out
-	rm -rf $(OUTPUT_DIR)/*
+	rm -rf $(BIN_DIR)/* ./slurm*.out
 
 run:
 	make --no-print-directory clean && make --no-print-directory all && sbatch job.sh

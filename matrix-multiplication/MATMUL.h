@@ -1,4 +1,9 @@
-#pragma once
+#ifndef MATMUL_H
+#define MATMUL_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 struct parameters {
     float *M;
@@ -13,3 +18,12 @@ struct parameters {
     int head;
     char *output_filename;
 };
+
+void do_compute(struct parameters *p);
+int do_validate(const struct parameters *p);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif

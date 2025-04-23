@@ -3,10 +3,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
+#include <time.h>
+#include <cublas_v2.h>
 
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
-void do_compute(const struct parameters *p);
+// Function to calculate elapsed time in milliseconds
+static inline double elapsedMS(const struct timespec *start, const struct timespec *end)
+{
+    return (end->tv_sec - start->tv_sec) * 1e3 + (end->tv_nsec - start->tv_nsec) / 1e6;
+}
 
 void initMatrix(float **X, int *r_X, int *c_X)
 {
@@ -141,6 +147,10 @@ int main(int argc, char **argv)
         exit(-1);
     }
 
+    // Initialise timing
+    struct timespec doComputeStart, doComputeEnd;
+    struct timespec doValidateStart, doValidateEnd;
+
     // Initialise matrix pointers
     int r_M = 0, c_M = 0, r_N = 0, c_N = 0, r_P = 0, c_P = 0;
     float *M, *N, *P;
@@ -158,19 +168,40 @@ int main(int argc, char **argv)
         .r_P = r_P,
         .c_P = c_P,
         .head = 5,
-        .output_filename = "output/MATMUL.out"};
+    };
 
     // Sanity check: Print matrix dimensions and data
     // Note: This is a simple check to ensure the matrices are read correctly.
     sanityCheck(&p);
 
-    printf("Starting computation!\n");
+    printf("Starting computation!\n\n");
+
+    clock_gettime(CLOCK_MONOTONIC, &doComputeStart);
 
     // Entry point of computation
     do_compute(&p);
 
-    // Print result to output file
-    printf("Successfully completed!\n");
+    clock_gettime(CLOCK_MONOTONIC, &doComputeEnd);
+
+    double computeTime = elapsedMS(&doComputeStart, &doComputeEnd);
+    printf("do_compute time: %lf ms\n\n", computeTime);
+
+    clock_gettime(CLOCK_MONOTONIC, &doValidateStart);
+
+    if (do_validate(&p) == 0)
+    {
+        fflush(stdout);
+        fprintf(stderr, "Incorrect output! ❌\nExiting!\n");
+        fprintf(stderr, "\n----------------------------------\n\n");
+        fflush(stderr);
+        exit(-1);
+    }
+
+    clock_gettime(CLOCK_MONOTONIC, &doValidateEnd);
+    double validationTime = elapsedMS(&doValidateStart, &doValidateEnd);
+    printf("do_validate time: %lf ms\n\n", validationTime);
+
+    printf("Correct output! ✅\n\n");
 
     outputMatrix(p.output_filename, p.P, p.r_P, p.c_P);
     printf("Output written to: %s\n", p.output_filename);
@@ -179,6 +210,9 @@ int main(int argc, char **argv)
     free(M);
     free(N);
     free(P);
+    free(p.output_filename);
+
+    printf("\n----------------------------------\n\n");
 
     return 0;
 }

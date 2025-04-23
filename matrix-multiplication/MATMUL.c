@@ -181,6 +181,11 @@ int main(int argc, char **argv)
     // Entry point of computation
     do_compute(&p);
 
+    if (p.blockSize != 0)
+    {
+        printf("Block size: %dx%d\n\n", p.blockSize, p.blockSize);
+    }
+
     clock_gettime(CLOCK_MONOTONIC, &doComputeEnd);
 
     double computeTime = elapsedMS(&doComputeStart, &doComputeEnd);

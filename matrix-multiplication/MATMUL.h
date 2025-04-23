@@ -17,6 +17,11 @@ struct parameters {
     int c_P;
     int head;
     char *output_filename;
+    int blockSize;
+};
+
+struct gpu_parameters {
+    int block_size;
 };
 
 void do_compute(struct parameters *p);

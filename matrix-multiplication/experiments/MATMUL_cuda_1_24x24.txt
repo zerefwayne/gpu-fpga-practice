@@ -18,13 +18,15 @@ Matrix N (head):
 
 Starting computation!
 
-do_compute time: 0.004270 ms
+Block size: 24x24
 
-do_validate time: 639.938233 ms
+do_compute time: 621.326288 ms
+
+do_validate time: 17.922216 ms
 
 Correct output! ✅
 
-Output written to: output/MATMUL_10_10_10_10_seq.out
+Output written to: output/MATMUL_10_10_10_10_cuda_1.out
 
 ----------------------------------
 
@@ -48,13 +50,15 @@ Matrix N (head):
 
 Starting computation!
 
-do_compute time: 0.009197 ms
+Block size: 24x24
 
-do_validate time: 624.769014 ms
+do_compute time: 608.349351 ms
+
+do_validate time: 19.463589 ms
 
 Correct output! ✅
 
-Output written to: output/MATMUL_20_20_20_20_seq.out
+Output written to: output/MATMUL_20_20_20_20_cuda_1.out
 
 ----------------------------------
 
@@ -78,13 +82,15 @@ Matrix N (head):
 
 Starting computation!
 
-do_compute time: 0.026775 ms
+Block size: 24x24
 
-do_validate time: 624.649983 ms
+do_compute time: 605.041577 ms
+
+do_validate time: 19.523156 ms
 
 Correct output! ✅
 
-Output written to: output/MATMUL_30_30_30_30_seq.out
+Output written to: output/MATMUL_30_30_30_30_cuda_1.out
 
 ----------------------------------
 
@@ -108,13 +114,15 @@ Matrix N (head):
 
 Starting computation!
 
-do_compute time: 0.057673 ms
+Block size: 24x24
 
-do_validate time: 625.975215 ms
+do_compute time: 606.169365 ms
+
+do_validate time: 19.439407 ms
 
 Correct output! ✅
 
-Output written to: output/MATMUL_40_40_40_40_seq.out
+Output written to: output/MATMUL_40_40_40_40_cuda_1.out
 
 ----------------------------------
 
@@ -138,13 +146,15 @@ Matrix N (head):
 
 Starting computation!
 
-do_compute time: 0.108767 ms
+Block size: 24x24
 
-do_validate time: 639.638930 ms
+do_compute time: 604.753218 ms
+
+do_validate time: 19.412042 ms
 
 Correct output! ✅
 
-Output written to: output/MATMUL_50_50_50_50_seq.out
+Output written to: output/MATMUL_50_50_50_50_cuda_1.out
 
 ----------------------------------
 
@@ -168,13 +178,15 @@ Matrix N (head):
 
 Starting computation!
 
-do_compute time: 0.189060 ms
+Block size: 24x24
 
-do_validate time: 625.116189 ms
+do_compute time: 605.297859 ms
+
+do_validate time: 19.436787 ms
 
 Correct output! ✅
 
-Output written to: output/MATMUL_60_60_60_60_seq.out
+Output written to: output/MATMUL_60_60_60_60_cuda_1.out
 
 ----------------------------------
 
@@ -198,13 +210,15 @@ Matrix N (head):
 
 Starting computation!
 
-do_compute time: 0.298164 ms
+Block size: 24x24
 
-do_validate time: 638.898919 ms
+do_compute time: 605.203517 ms
+
+do_validate time: 19.510486 ms
 
 Correct output! ✅
 
-Output written to: output/MATMUL_70_70_70_70_seq.out
+Output written to: output/MATMUL_70_70_70_70_cuda_1.out
 
 ----------------------------------
 
@@ -228,13 +242,15 @@ Matrix N (head):
 
 Starting computation!
 
-do_compute time: 0.453376 ms
+Block size: 24x24
 
-do_validate time: 639.421881 ms
+do_compute time: 603.525137 ms
+
+do_validate time: 19.432475 ms
 
 Correct output! ✅
 
-Output written to: output/MATMUL_80_80_80_80_seq.out
+Output written to: output/MATMUL_80_80_80_80_cuda_1.out
 
 ----------------------------------
 
@@ -258,13 +274,15 @@ Matrix N (head):
 
 Starting computation!
 
-do_compute time: 0.646768 ms
+Block size: 24x24
 
-do_validate time: 638.733581 ms
+do_compute time: 621.973778 ms
+
+do_validate time: 19.576335 ms
 
 Correct output! ✅
 
-Output written to: output/MATMUL_90_90_90_90_seq.out
+Output written to: output/MATMUL_90_90_90_90_cuda_1.out
 
 ----------------------------------
 
@@ -288,13 +306,15 @@ Matrix N (head):
 
 Starting computation!
 
-do_compute time: 0.894554 ms
+Block size: 24x24
 
-do_validate time: 623.900094 ms
+do_compute time: 619.811398 ms
+
+do_validate time: 19.523661 ms
 
 Correct output! ✅
 
-Output written to: output/MATMUL_100_100_100_100_seq.out
+Output written to: output/MATMUL_100_100_100_100_cuda_1.out
 
 ----------------------------------
 
@@ -318,13 +338,15 @@ Matrix N (head):
 
 Starting computation!
 
-do_compute time: 7.783909 ms
+Block size: 24x24
 
-do_validate time: 621.049955 ms
+do_compute time: 608.940543 ms
+
+do_validate time: 19.923623 ms
 
 Correct output! ✅
 
-Output written to: output/MATMUL_200_200_200_200_seq.out
+Output written to: output/MATMUL_200_200_200_200_cuda_1.out
 
 ----------------------------------
 
@@ -348,13 +370,15 @@ Matrix N (head):
 
 Starting computation!
 
-do_compute time: 27.799377 ms
+Block size: 24x24
 
-do_validate time: 633.449246 ms
+do_compute time: 607.524996 ms
+
+do_validate time: 20.411620 ms
 
 Correct output! ✅
 
-Output written to: output/MATMUL_300_300_300_300_seq.out
+Output written to: output/MATMUL_300_300_300_300_cuda_1.out
 
 ----------------------------------
 
@@ -378,13 +402,15 @@ Matrix N (head):
 
 Starting computation!
 
-do_compute time: 68.383571 ms
+Block size: 24x24
 
-do_validate time: 635.459591 ms
+do_compute time: 620.357613 ms
+
+do_validate time: 22.345910 ms
 
 Correct output! ✅
 
-Output written to: output/MATMUL_400_400_400_400_seq.out
+Output written to: output/MATMUL_400_400_400_400_cuda_1.out
 
 ----------------------------------
 
@@ -408,13 +434,15 @@ Matrix N (head):
 
 Starting computation!
 
-do_compute time: 130.297476 ms
+Block size: 24x24
 
-do_validate time: 629.385731 ms
+do_compute time: 624.988974 ms
+
+do_validate time: 23.677065 ms
 
 Correct output! ✅
 
-Output written to: output/MATMUL_500_500_500_500_seq.out
+Output written to: output/MATMUL_500_500_500_500_cuda_1.out
 
 ----------------------------------
 
@@ -438,13 +466,15 @@ Matrix N (head):
 
 Starting computation!
 
-do_compute time: 234.638842 ms
+Block size: 24x24
 
-do_validate time: 637.946327 ms
+do_compute time: 619.898797 ms
+
+do_validate time: 24.658891 ms
 
 Correct output! ✅
 
-Output written to: output/MATMUL_600_600_600_600_seq.out
+Output written to: output/MATMUL_600_600_600_600_cuda_1.out
 
 ----------------------------------
 
@@ -468,13 +498,15 @@ Matrix N (head):
 
 Starting computation!
 
-do_compute time: 375.086696 ms
+Block size: 24x24
 
-do_validate time: 636.919771 ms
+do_compute time: 612.722923 ms
+
+do_validate time: 26.127131 ms
 
 Correct output! ✅
 
-Output written to: output/MATMUL_700_700_700_700_seq.out
+Output written to: output/MATMUL_700_700_700_700_cuda_1.out
 
 ----------------------------------
 
@@ -498,13 +530,15 @@ Matrix N (head):
 
 Starting computation!
 
-do_compute time: 569.553917 ms
+Block size: 24x24
 
-do_validate time: 638.500637 ms
+do_compute time: 629.827506 ms
+
+do_validate time: 27.825274 ms
 
 Correct output! ✅
 
-Output written to: output/MATMUL_800_800_800_800_seq.out
+Output written to: output/MATMUL_800_800_800_800_cuda_1.out
 
 ----------------------------------
 
@@ -528,13 +562,15 @@ Matrix N (head):
 
 Starting computation!
 
-do_compute time: 806.035822 ms
+Block size: 24x24
 
-do_validate time: 644.244371 ms
+do_compute time: 625.369722 ms
+
+do_validate time: 28.287839 ms
 
 Correct output! ✅
 
-Output written to: output/MATMUL_900_900_900_900_seq.out
+Output written to: output/MATMUL_900_900_900_900_cuda_1.out
 
 ----------------------------------
 
@@ -558,13 +594,15 @@ Matrix N (head):
 
 Starting computation!
 
-do_compute time: 1055.796779 ms
+Block size: 24x24
 
-do_validate time: 635.569318 ms
+do_compute time: 628.468640 ms
+
+do_validate time: 30.813561 ms
 
 Correct output! ✅
 
-Output written to: output/MATMUL_1000_1000_1000_1000_seq.out
+Output written to: output/MATMUL_1000_1000_1000_1000_cuda_1.out
 
 ----------------------------------
 
@@ -588,13 +626,15 @@ Matrix N (head):
 
 Starting computation!
 
-do_compute time: 8562.579875 ms
+Block size: 24x24
 
-do_validate time: 676.742806 ms
+do_compute time: 700.444794 ms
+
+do_validate time: 59.885792 ms
 
 Correct output! ✅
 
-Output written to: output/MATMUL_2000_2000_2000_2000_seq.out
+Output written to: output/MATMUL_2000_2000_2000_2000_cuda_1.out
 
 ----------------------------------
 
@@ -618,13 +658,15 @@ Matrix N (head):
 
 Starting computation!
 
-do_compute time: 43500.184279 ms
+Block size: 24x24
 
-do_validate time: 730.434377 ms
+do_compute time: 874.160339 ms
+
+do_validate time: 116.096029 ms
 
 Correct output! ✅
 
-Output written to: output/MATMUL_3000_3000_3000_3000_seq.out
+Output written to: output/MATMUL_3000_3000_3000_3000_cuda_1.out
 
 ----------------------------------
 
@@ -648,13 +690,15 @@ Matrix N (head):
 
 Starting computation!
 
-do_compute time: 157690.732403 ms
+Block size: 24x24
 
-do_validate time: 814.715428 ms
+do_compute time: 1168.860610 ms
+
+do_validate time: 196.327080 ms
 
 Correct output! ✅
 
-Output written to: output/MATMUL_4000_4000_4000_4000_seq.out
+Output written to: output/MATMUL_4000_4000_4000_4000_cuda_1.out
 
 ----------------------------------
 

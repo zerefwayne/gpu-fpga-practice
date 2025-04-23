@@ -38,6 +38,6 @@ fi
 
 if [ "$2" = "L" ]; then
     for i in {2000..4000..1000}; do
-        ./bin/MATMUL_seq ./input/input_${i}_${i}_${i}_${i}.in
+        "$1" ./input/input_${i}_${i}_${i}_${i}.in
     done
 fi

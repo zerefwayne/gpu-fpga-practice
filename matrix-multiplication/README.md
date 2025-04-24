@@ -1,52 +1,75 @@
-### Setup Initialization
+# Matrix Multiplication Benchmark Suite
 
-To initialize the setup, execute the following command:
+This project provides a framework for benchmarking matrix multiplication implementations on various platforms such as CPUs and GPUs. The suite supports custom implementations and allows users to measure performance across different configurations.
+
+---
+
+## Setup
+
+To initialize the project environment, execute the following command:
 
 ```bash
 make init
 ```
 
-This command will create the `output` and `bin` directories and generate the necessary input files in the `input` directory.
+This will create the necessary directories (`output` and `bin`) and generate sample input files in the `input` directory.
 
-### Executing the Program
+---
 
-After making modifications to the code, you can run the program using the following command:
+## Executing the Program
 
-```bash
-make run_<code-name>
-```
-
-For example, if your file is named `MATMUL_cuda_1.cu`, replace `<code-name>` with `cuda_1` and execute:
+After modifying or adding code, you can execute the program using the following command:
 
 ```bash
-make run_cuda_1
+make run TARGET=<implementation-name>
 ```
 
-By default, the program processes matrices of size 100x100. To modify the matrix size, update the `job.sh` file accordingly.
-
-### Running Benchmarks
-
-To perform benchmarking, use the following command:
+### Example:
+If your implementation file is named `MATMUL_cuda_1.cu`, replace `<implementation-name>` with `cuda_1`:
 
 ```bash
-make run_benchmark TARGET=<code-name> N_BENCHMARKS=<value> N_ITERATIONS=<value>
+make run TARGET=cuda_1
 ```
 
-- **`N_BENCHMARKS`**: Specifies the size of the matrices to be generated and multiplied. It must be an integer where `N_BENCHMARKS >= 1`.
-- **`N_ITERATIONS`**: Indicates the number of times the code will execute for each benchmark. It must be an integer where `N_ITERATIONS >= 1`. The program will calculate and display the average execution time across all iterations.
+By default, the program processes matrices of size **100x100**. To modify the matrix size, update the `job.sh` file accordingly.
 
-For instance, to benchmark with `code-name` set to `cuda_1`, a matrix size of 20x20, and 10 iterations, execute:
+---
+
+## Running Benchmarks
+
+To benchmark a specific implementation, use the following command:
 
 ```bash
-make run_benchmark TARGET=cuda_1 N_BENCHMARKS=20 N_ITERATIONS=10
+make benchmark TARGET=<implementation-name> N_BENCHMARKS=<value> N_ITERATIONS=<value>
 ```
 
-### Adding a Custom Implementation of `do_compute`
+### Parameters:
+- **`TARGET`**: The name of the implementation to benchmark (e.g., `cuda_1` for `MATMUL_cuda_1.cu`).
+- **`N_BENCHMARKS`**: Specifies the number of matrix sizes to benchmark. Must be an integer where `N_BENCHMARKS >= 1`.
+- **`N_ITERATIONS`**: Specifies the number of iterations for each benchmark. Must be an integer where `N_ITERATIONS >= 1`. The program computes and displays the average execution time across all iterations.
 
-To integrate a custom implementation, follow these steps:
+### Example:
+To benchmark the `cuda_1` implementation with 20 matrix sizes and 10 iterations, run:
 
-1. Create a new file using the naming convention `MATMUL_<implementation-name>(.c/.cu)`.
-2. Ensure that you import `KMEANS.h` and implement the `do_compute` method. For reference, review the `MATMUL_cuda_1.cu` file.
-3. Open the `Makefile` and locate the sections marked with comments starting with `NEWFILE`.
-4. Add references to your implementation in all locations marked with `NEWFILE` comments.
-5. Execute the new implementation using the instructions provided above.
+```bash
+make benchmark TARGET=cuda_1 N_BENCHMARKS=20 N_ITERATIONS=10
+```
+
+---
+
+## Adding a Custom Implementation
+
+To add a custom implementation of the `do_compute` function, follow these steps:
+
+1. Create a new file using the naming convention `MATMUL_<implementation-name>.c` or `MATMUL_<implementation-name>.cu`.
+2. Include the `MATMUL.h` header file in your implementation.
+3. Implement the `do_compute` function. Refer to existing implementations (e.g., `MATMUL_cuda_1.cu`) for guidance.
+4. Use the `make run` or `make benchmark` commands to execute or benchmark your implementation.
+
+---
+
+## Notes
+
+- Ensure that all dependencies are correctly installed and accessible.
+- Use the `make clean_all` command to remove all input files, binaries and outputs. Check `Makefile` for more options.
+- For advanced configurations, modify the `Makefile`, `run_job.sh` or `benchmark_job.sh` script as required.

@@ -22,12 +22,6 @@ if [ ! -x "$BENCHMARK_BINARY" ]; then
     exit 1
 fi
 
-# Ensure TARGET_BINARY exists
-if [ ! -f "$TARGET_BINARY" ]; then
-    echo "Error: TARGET_BINARY '$TARGET_BINARY' does not exist."
-    exit 1
-fi
-
 # Ensure N_BENCHMARKS is a positive integer
 if ! [ "$N_BENCHMARKS" -gt 1 ] 2>/dev/null; then
     echo "Error: N_BENCHMARKS '$N_BENCHMARKS' must be a positive integer."

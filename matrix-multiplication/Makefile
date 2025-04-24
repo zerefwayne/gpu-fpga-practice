@@ -1,110 +1,138 @@
-# Define compilers
-CUDACC = nvcc
+# Compilers
+CC      := gcc
+CUDACC  := nvcc
 
-# Define flags
-CFLAGS = -O3 -Wall
-CUDAFLAGS = -O3
-LIBS = -lm -lcublas
+# Flags
+CFLAGS      := -O3 -Wall
+CUDAFLAGS   := -O3
+LIBS        := -lm -lcublas
 
-# Define directories
-BIN_DIR = bin
-OUTPUT_DIR = output
-INPUT_DIR = input
+# Directories
+BIN_DIR     := bin
+OUTPUT_DIR  := output
+INPUT_DIR   := input
 
-# Common object files
-MATMUL_OBJ            = $(BIN_DIR)/MATMUL.o
-MATMUL_VALIDATE_OBJ   = $(BIN_DIR)/MATMUL_validate.o
-MATMUL_BENCHMARK_OBJ  = $(BIN_DIR)/MATMUL_benchmark.o
+# Support sources (always included)
+VALIDATE_SRC   := MATMUL_validate.cu
+SUPPORT_SRC    := MATMUL.c
+BENCH_SRC      := MATMUL_benchmark.c
 
-# Code object files
-MATMUL_SEQ_OBJ        = $(BIN_DIR)/MATMUL_seq.o
-MATMUL_CUDA_1_OBJ 	  = $(BIN_DIR)/MATMUL_cuda_1.o
-# NEWFILE: Add your new file here in the same format as the existing one on the previous line
+# Discover all candidate implementation sources
+CU_SRCS       := $(wildcard MATMUL_*.cu)
+IMPL_CU_SRCS  := $(filter-out $(VALIDATE_SRC),$(CU_SRCS))
 
-# Common executable targets
-TARGET_BENCHMARK = $(BIN_DIR)/MATMUL_benchmark
+C_SRCS        := $(wildcard MATMUL_*.c)
+IMPL_C_SRCS   := $(filter-out $(SUPPORT_SRC) $(BENCH_SRC),$(C_SRCS))
 
-# Code executable targets
-TARGET_MATMUL_SEQ = $(BIN_DIR)/MATMUL_seq
-TARGET_MATMUL_CUDA_1 = $(BIN_DIR)/MATMUL_cuda_1
-# NEWFILE: Add your new file here in the same format as the existing one in the previous line
+# Names like "seq", "cuda_1", etc.
+IMPL_NAMES    := $(sort \
+                    $(patsubst MATMUL_%.cu,%,$(IMPL_CU_SRCS)) \
+                    $(patsubst MATMUL_%.c,%, $(IMPL_C_SRCS)) \
+                 )
 
-# Common object files
+# Build lists
+SUPPORT_OBJS  := $(BIN_DIR)/MATMUL_validate.o $(BIN_DIR)/MATMUL.o
+BENCH_OBJ     := $(BIN_DIR)/MATMUL_benchmark.o
+IMPL_OBJS     := $(IMPL_NAMES:%=$(BIN_DIR)/MATMUL_%.o)
+IMPL_EXES     := $(IMPL_NAMES:%=$(BIN_DIR)/MATMUL_%)
 
-# Compile MATMUL_validate.cu
-$(MATMUL_VALIDATE_OBJ): MATMUL_validate.cu | $(BIN_DIR)
-	$(CUDACC) $(CUDAFLAGS) -c MATMUL_validate.cu -o $(MATMUL_VALIDATE_OBJ)
+# Runtime parameters (override on CLI)
+N_BENCHMARKS   ?= 10
+N_ITERATIONS   ?= 10
 
-# Compile MATMUL.c with nvcc (as C code)
-$(MATMUL_OBJ): MATMUL.c | $(BIN_DIR)
-	$(CUDACC) -x cu $(CUDAFLAGS) -c MATMUL.c -o $(MATMUL_OBJ)
+.PHONY: all init clean clean_all run benchmark
 
-$(MATMUL_BENCHMARK_OBJ): MATMUL_benchmark.c | $(BIN_DIR)
-	$(CUDACC) -x cu $(CUDAFLAGS) -c MATMUL_benchmark.c -o $(MATMUL_BENCHMARK_OBJ)
+# ——————————————————————————————————————————————
+# Default: build every implementation
+all: $(BIN_DIR) $(IMPL_EXES)
 
-# Object files
+# Ensure bin directory exists
+$(BIN_DIR):
+	mkdir -p $(BIN_DIR)
 
-# For MATMUL_seq.c
-$(MATMUL_SEQ_OBJ): MATMUL_seq.c | $(BIN_DIR)
-	$(CC) $(CFLAGS) -c MATMUL_seq.c -o $(MATMUL_SEQ_OBJ)
+# Compile any .cu → .o
+$(BIN_DIR)/%.o: %.cu | $(BIN_DIR)
+	$(CUDACC) $(CUDAFLAGS) -c $< -o $@
 
-# For MATMUL_cuda_1.c
-$(MATMUL_CUDA_1_OBJ): MATMUL_cuda_1.cu | $(BIN_DIR)
-	$(CUDACC) $(CUDAFLAGS) -c MATMUL_cuda_1.cu -o $(MATMUL_CUDA_1_OBJ)
-# NEWFILE: Add your new file here in the same format as the one on previous 2 lines
+# Compile any .c → .o
+$(BIN_DIR)/%.o: %.c | $(BIN_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
 
+# Link each implementation into its executable
+$(BIN_DIR)/MATMUL_%: $(BIN_DIR)/MATMUL_%.o $(SUPPORT_OBJS)
+	$(CUDACC) $^ $(LIBS) -o $@
+
+# Explicit support-object rules
+$(BIN_DIR)/MATMUL_validate.o: MATMUL_validate.cu | $(BIN_DIR)
+	$(CUDACC) $(CUDAFLAGS) -c $< -o $@
+
+$(BIN_DIR)/MATMUL.o: MATMUL.c | $(BIN_DIR)
+	$(CUDACC) -x cu $(CUDAFLAGS) -c $< -o $@
+
+$(BIN_DIR)/MATMUL_benchmark.o: MATMUL_benchmark.c | $(BIN_DIR)
+	$(CUDACC) -x cu $(CUDAFLAGS) -c $< -o $@
+
+# ——————————————————————————————————————————————
+# run: build & submit SLURM job for one variant
+# Usage: make run TARGET=<name> INPUT_FILE=<input file path>
+run:
+	@if [ -z "$(TARGET)" ]; then \
+	  echo "Error: please set TARGET, e.g. 'make run TARGET=seq'"; \
+	  exit 1; \
+	fi
+	@if [ -z "$(INPUT_FILE)" ]; then \
+	  echo "Error: please set INPUT_FILE, e.g. 'make run TARGET=seq INPUT_FILE=path/to/input'"; \
+	  exit 1; \
+	fi
+	@if [ ! -f "$(INPUT_FILE)" ]; then \
+	  echo "Error: input file '$(INPUT_FILE)' does not exist."; \
+	  exit 1; \
+	fi
+	@$(MAKE) --no-print-directory $(BIN_DIR)/MATMUL_$(TARGET)
+	@if [ ! -x $(BIN_DIR)/MATMUL_$(TARGET) ]; then \
+	  echo "Error: binary '$(BIN_DIR)/MATMUL_$(TARGET)' not found."; \
+	  echo "  Build it first with 'make $(BIN_DIR)/MATMUL_$(TARGET)'"; \
+	  exit 1; \
+	fi
+	sbatch run_job.sh $(BIN_DIR)/MATMUL_$(TARGET) $(INPUT_FILE)
+
+# ——————————————————————————————————————————————
+# benchmark: build & submit SLURM benchmark for one variant
+# Usage: make benchmark TARGET=<name> [N_BENCHMARKS=<n>] [N_ITERATIONS=<m>]
+benchmark:
+	@if [ -z "$(TARGET)" ]; then \
+	  echo "Error: please set TARGET, e.g. 'make benchmark TARGET=seq'"; \
+	  exit 1; \
+	fi
+	@if [ ! -f MATMUL_$(TARGET).cu ] && [ ! -f MATMUL_$(TARGET).c ]; then \
+	  echo "Error: no source 'MATMUL_$(TARGET).cu' or '.c' found."; \
+	  exit 1; \
+	fi
+
+	# ensure all three objects are built
+	$(MAKE) --no-print-directory $(BIN_DIR)/MATMUL_validate.o
+	$(MAKE) --no-print-directory $(BIN_DIR)/MATMUL_$(TARGET).o
+	$(MAKE) --no-print-directory $(BIN_DIR)/MATMUL_benchmark.o
+
+	# now link them together
+	$(CUDACC) \
+	  $(BIN_DIR)/MATMUL_validate.o \
+	  $(BIN_DIR)/MATMUL_$(TARGET).o \
+	  $(BIN_DIR)/MATMUL_benchmark.o \
+	  $(LIBS) -o $(BIN_DIR)/MATMUL_benchmark
+
+	# submit
+	sbatch benchmark_job.sh \
+	  $(BIN_DIR)/MATMUL_benchmark \
+	  $(TARGET) $(N_BENCHMARKS) $(N_ITERATIONS)
+
+# ——————————————————————————————————————————————
 init:
 	make --no-print-directory clean_all && \
 	mkdir -p $(BIN_DIR) && \
 	mkdir -p $(OUTPUT_DIR) && \
 	cd input && sh ./generate.sh
 
-execute:
-	echo "" && \
-	echo "Running: $(TARGET_OBJ)" && \
-	echo "" && \
-	make --no-print-directory $(MATMUL_VALIDATE_OBJ) && \
-	make --no-print-directory $(TARGET_OBJ) && \
-	make --no-print-directory $(MATMUL_OBJ) && \
-	$(CUDACC) $(MATMUL_VALIDATE_OBJ) $(TARGET_OBJ) $(MATMUL_OBJ) $(LIBS) -o $(TARGET_EXECUTABLE) && \
-	sbatch job.sh $(TARGET_EXECUTABLE)
-
-run:
-ifeq ($(TARGET), seq)
-	make --no-print-directory execute TARGET_OBJ=$(MATMUL_SEQ_OBJ) TARGET_EXECUTABLE=$(TARGET_MATMUL_SEQ)
-else ifeq ($(TARGET), cuda_1)
-	make --no-print-directory execute TARGET_OBJ=$(MATMUL_CUDA_1_OBJ) TARGET_EXECUTABLE=$(TARGET_MATMUL_CUDA_1)
-# NEWFILE: Add another for your new file as the previous 2 lines
-else
-	$(error Invalid TARGET specified (Valid options: seq cuda_1))
-# NEWFILE: Append your new file to valid options list
-endif
-
-N_BENCHMARKS ?= 10
-N_ITERATIONS ?= 10
-
-benchmark:
-	echo "" && \
-	echo "Benchmarking: $(TARGET_OBJ)" && \
-	echo "" && \
-	make --no-print-directory $(MATMUL_VALIDATE_OBJ) && \
-	make --no-print-directory $(TARGET_OBJ) && \
-	make --no-print-directory $(MATMUL_BENCHMARK_OBJ) && \
-	$(CUDACC) $(MATMUL_VALIDATE_OBJ) $(TARGET_OBJ) $(MATMUL_BENCHMARK_OBJ) $(LIBS) -o $(TARGET_BENCHMARK) && \
-	sbatch benchmark_job.sh $(TARGET_BENCHMARK) $(TARGET_OBJ) $(N_BENCHMARKS) $(N_ITERATIONS)
-
-run_benchmark:
-ifeq ($(TARGET), seq)
-	make --no-print-directory benchmark TARGET_OBJ=$(MATMUL_SEQ_OBJ) N_BENCHMARKS=$(N_BENCHMARKS) N_ITERATIONS=$(N_ITERATIONS)
-else ifeq ($(TARGET), cuda_1)
-	make --no-print-directory benchmark TARGET_OBJ=$(MATMUL_CUDA_1_OBJ) N_BENCHMARKS=$(N_BENCHMARKS) N_ITERATIONS=$(N_ITERATIONS)
-# NEWFILE: Add another for your new file as the previous 2 lines
-else
-	$(error Invalid TARGET specified (Valid options: seq cuda_1))
-# NEWFILE: Append your new file to valid options list
-endif
-
-# Clean build files
 clean_bin:
 	rm -rf $(BIN_DIR)/*
 

@@ -14,22 +14,20 @@ INPUT_DIR = input
 # Define object files
 MATMUL_OBJ            = $(BIN_DIR)/MATMUL.o
 MATMUL_VALIDATE_OBJ   = $(BIN_DIR)/MATMUL_validate.o
+MATMUL_BENCHMARK_OBJ  = $(BIN_DIR)/MATMUL_benchmark.o
 MATMUL_SEQ_OBJ        = $(BIN_DIR)/MATMUL_seq.o
 MATMUL_CUDA_1_OBJ 	  = $(BIN_DIR)/MATMUL_cuda_1.o
 
 # Define final binaries
+TARGET_BENCHMARK = $(BIN_DIR)/MATMUL_benchmark
 TARGET_MATMUL_SEQ = $(BIN_DIR)/MATMUL_seq
 TARGET_MATMUL_CUDA_1 = $(BIN_DIR)/MATMUL_cuda_1
 
-# Final list of object files
 OBJS_SEQ = $(MATMUL_VALIDATE_OBJ) $(MATMUL_SEQ_OBJ) $(MATMUL_OBJ)  
 OBJS_CUDA_1 = $(MATMUL_VALIDATE_OBJ) $(MATMUL_CUDA_1_OBJ) $(MATMUL_OBJ)
 
-# Default problem size
+OBJS_BENCHMARK =  $(MATMUL_BENCHMARK_OBJ)
 
-SIZE ?= S # Could be S, M or L
-
-# Default target
 all: $(TARGET_MATMUL_SEQ) $(TARGET_MATMUL_CUDA_1)
 
 init_tasks: $(BIN_DIR) $(OUTPUT_DIR) GENERATE_INPUT
@@ -54,6 +52,9 @@ $(MATMUL_VALIDATE_OBJ): MATMUL_validate.cu | $(BIN_DIR)
 # Compile MATMUL.c with nvcc (as C code)
 $(MATMUL_OBJ): MATMUL.c | $(BIN_DIR)
 	$(CUDACC) -x cu $(CUDAFLAGS) -c MATMUL.c -o $(MATMUL_OBJ)
+
+$(MATMUL_BENCHMARK_OBJ): MATMUL_benchmark.c | $(BIN_DIR)
+	$(CUDACC) -x cu $(CUDAFLAGS) -c MATMUL_benchmark.c -o $(MATMUL_BENCHMARK_OBJ)
 
 # SEQ
 # Compile MATMUL_seq.c with nvcc (as C code)
@@ -99,8 +100,30 @@ init:
 
 run_seq:
 	make --no-print-directory $(TARGET_MATMUL_SEQ) && \
-	sbatch job.sh $(TARGET_MATMUL_SEQ) $(SIZE)
+	sbatch job.sh $(TARGET_MATMUL_SEQ)
 
 run_cuda_1:
 	make --no-print-directory $(TARGET_MATMUL_CUDA_1) && \
-	sbatch job.sh $(TARGET_MATMUL_CUDA_1) $(SIZE)
+	sbatch job.sh $(TARGET_MATMUL_CUDA_1)
+
+N_BENCHMARKS ?= 10
+N_ITERATIONS ?= 10
+
+benchmark:
+	echo "" && \
+	echo "Benchmarking: $(TARGET_OBJ)" && \
+	echo "" && \
+	make --no-print-directory $(MATMUL_VALIDATE_OBJ) && \
+	make --no-print-directory $(TARGET_OBJ) && \
+	make --no-print-directory $(MATMUL_BENCHMARK_OBJ) && \
+	$(CUDACC) $(MATMUL_VALIDATE_OBJ) $(TARGET_OBJ) $(MATMUL_BENCHMARK_OBJ) $(LIBS) -o $(TARGET_BENCHMARK) && \
+	sbatch benchmark_job.sh $(TARGET_BENCHMARK) $(TARGET_OBJ) $(N_BENCHMARKS) $(N_ITERATIONS)
+
+run_benchmark:
+ifeq ($(TARGET), seq)
+	make --no-print-directory benchmark TARGET_OBJ=$(MATMUL_SEQ_OBJ) N_BENCHMARKS=$(N_BENCHMARKS) N_ITERATIONS=$(N_ITERATIONS)
+else ifeq ($(TARGET), cuda_1)
+	make --no-print-directory benchmark TARGET_OBJ=$(MATMUL_CUDA_1_OBJ) N_BENCHMARKS=$(N_BENCHMARKS) N_ITERATIONS=$(N_ITERATIONS)
+else
+	$(error Invalid TARGET specified (Valid options: seq cuda_1))
+endif

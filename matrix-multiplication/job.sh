@@ -5,39 +5,12 @@
 #SBATCH --constraint=TitanX           # Specify a hardware constraint (e.g., TitanX GPU)
 
 # Validate input arguments
-
-if [ "$#" -ne 2 ]; then
-    echo "Usage: $0 <binary_file_path> <problem_size (S/M/L)>"
+if [ -z "$1" ]; then
+    echo "Error: No executable provided."
+    echo "Usage: $0 <executable>"
     exit 1
 fi
 
-if [ ! -x "$1" ]; then
-    echo "Error: The binary file '$1' does not exist or is not executable."
-    exit 1
-fi
+SIZE=100
 
-if [ "$2" != "S" ] && [ "$2" != "M" ] && [ "$2" != "L" ]; then
-    echo "Error: Problem size must be one of 'S', 'M', or 'L'."
-    exit 1
-fi
-
-
-# Run binaries for different sizes
-
-if [ "$2" = "S" ] || [ "$2" = "M" ] || [ "$2" = "L" ]; then
-    for i in {10..100..10}; do
-        "$1" ./input/input_${i}_${i}_${i}_${i}.in
-    done
-fi
-
-if [ "$2" = "M" ] || [ "$2" = "L" ]; then
-    for i in {200..1000..100}; do
-        "$1" ./input/input_${i}_${i}_${i}_${i}.in
-    done
-fi
-
-if [ "$2" = "L" ]; then
-    for i in {2000..4000..1000}; do
-        "$1" ./input/input_${i}_${i}_${i}_${i}.in
-    done
-fi
+"$1" ./input/input_${SIZE}_${SIZE}_${SIZE}_${SIZE}.in

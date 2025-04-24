@@ -1,5 +1,5 @@
 // CUDA Implementation for Matrix Matrix Multiplication
-// Version 1.1: No optimizations, just a basic port, block size 16x16
+// Version 1.1: No optimizations, just a basic port, block size 32x32
 
 #include "MATMUL.h"
 
@@ -14,8 +14,10 @@
         cudaError_t err = call;                                   \
         if (err != cudaSuccess)                                   \
         {                                                         \
+            fflush(stdout);                                       \
             fprintf(stderr, "CUDA error at %s:%d: %s\n",          \
                     __FILE__, __LINE__, cudaGetErrorString(err)); \
+            fflush(stderr);                                       \
             exit(EXIT_FAILURE);                                   \
         }                                                         \
     } while (0)
@@ -88,7 +90,7 @@ extern "C" void do_compute(struct parameters *p)
     CUDA_CHECK(cudaMemcpy(d_N, h_N, size_N * sizeof(float), cudaMemcpyHostToDevice));
     CUDA_CHECK(cudaMemset(d_P, 0.0, size_P * sizeof(float)));
 
-    int BLOCK_SIZE = 24; // N * N
+    int BLOCK_SIZE = 32; // N * N
 
     p->blockSize = BLOCK_SIZE;
 
